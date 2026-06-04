@@ -198,14 +198,49 @@ function processData(silent = false) {
         return true; // all-leads
       }
     }).map(lead => {
+      // Robust Address Resolution
+      let resolvedAddress = 'No Address';
+      if (lead.address && typeof lead.address === 'string' && lead.address.trim() !== '') {
+        resolvedAddress = lead.address;
+      } else if (lead.fullAddress && typeof lead.fullAddress === 'string' && lead.fullAddress.trim() !== '') {
+        resolvedAddress = lead.fullAddress;
+      } else if (lead.addressSnippet && typeof lead.addressSnippet === 'string' && lead.addressSnippet.trim() !== '') {
+        resolvedAddress = lead.addressSnippet;
+      } else if (lead.street && typeof lead.street === 'string' && lead.street.trim() !== '') {
+        const parts = [
+          lead.street,
+          lead.city,
+          lead.state,
+          lead.postalCode,
+          lead.countryCode
+        ].filter(part => part && typeof part === 'string' && part.trim() !== '');
+        resolvedAddress = parts.join(', ');
+      }
+      
+      // Robust Email Resolution
+      let resolvedEmail = 'No Email';
+      if (lead.email && typeof lead.email === 'string' && lead.email.trim() !== '') {
+        resolvedEmail = lead.email;
+      } else if (lead.emails && Array.isArray(lead.emails) && lead.emails.length > 0) {
+        resolvedEmail = lead.emails[0];
+      } else if (lead.emails && typeof lead.emails === 'string' && lead.emails.trim() !== '') {
+        resolvedEmail = lead.emails;
+      } else if (lead.contactInfo && typeof lead.contactInfo === 'object') {
+        if (lead.contactInfo.email && typeof lead.contactInfo.email === 'string') {
+          resolvedEmail = lead.contactInfo.email;
+        } else if (lead.contactInfo.emails && Array.isArray(lead.contactInfo.emails) && lead.contactInfo.emails.length > 0) {
+          resolvedEmail = lead.contactInfo.emails[0];
+        }
+      }
+
       // Normalize columns
       return {
         name: lead.title || lead.name || 'Unnamed Business',
         phone: lead.phone || lead.phoneNumber || lead.phoneUnformatted || 'No Phone',
         website: lead.website || '',
-        address: lead.address || lead.fullAddress || 'No Address',
+        address: resolvedAddress,
         category: lead.categoryName || lead.subTitle || 'Business',
-        email: lead.email || (lead.emails && lead.emails[0]) || 'No Email',
+        email: resolvedEmail,
         url: lead.url || lead.link || ''
       };
     });
