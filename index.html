@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GMaps Lead Filter & Sync | Sharim Studios</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">🗺️</div>
+        <div class="logo-text">
+          <h1>LeadFilter</h1>
+          <span>by <a href="https://sharimstudios.com" target="_blank" class="brand-link">sharimstudios.com</a></span>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- Left Panel: Input & Config -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <h2>1. Scraped JSON</h2>
+          <p>Paste raw Google Maps JSON data. It parses instantly.</p>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea id="jsonInput" placeholder='[
+  {
+    "title": "Example Business",
+    "phone": "+1 234 567 890",
+    "address": "123 Main St, New York, NY",
+    "categoryName": "Consulting Agency",
+    "website": ""
+  }
+]'></textarea>
+          <div class="textarea-actions">
+            <button id="clearBtn" class="btn btn-secondary btn-sm">Clear</button>
+            <button id="loadSampleBtn" class="btn btn-secondary btn-sm">Load Sample</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-header">
+          <h2>2. Filter Mode</h2>
+          <p>Choose what type of leads you want to extract.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="filterType">Target Leads</label>
+          <select id="filterType" class="select-control">
+            <option value="no-website" selected>Without Website Only (Web Design Leads)</option>
+            <option value="has-website">With Website Only (SEO/Ads Leads)</option>
+            <option value="all-leads">All Leads (No Filter)</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-header">
+          <h2>3. Sheet Connection</h2>
+          <p>Direct sync setup for Google Sheets.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="scriptUrl">Web App URL</label>
+          <input type="url" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+        </div>
+
+        <!-- Setup instructions toggle -->
+        <details class="instructions-accordion">
+          <summary>
+            <span>Show Apps Script Setup</span>
+            <span class="accordion-arrow">▼</span>
+          </summary>
+          <div class="instructions-content">
+            <ol>
+              <li>Open your Google Sheet.</li>
+              <li>Go to <strong>Extensions</strong> > <strong>Apps Script</strong>.</li>
+              <li>Click below to copy the Script Code:
+                <button id="copyScriptCodeBtn" class="btn btn-secondary btn-xs btn-copy-code">
+                  📋 Copy Apps Script Code
+                </button>
+              </li>
+              <li>Paste the code in Google script editor and save.</li>
+              <li>Click <strong>Deploy</strong> > <strong>New deployment</strong>. Select <strong>Web app</strong>, set access to <strong>Anyone</strong>, and click Deploy.</li>
+              <li>Copy the Web App URL and paste it above.</li>
+            </ol>
+          </div>
+        </details>
+      </section>
+
+      <!-- Right Panel: Outputs -->
+      <section class="panel output-panel">
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value" id="totalLeadsVal">-</div>
+            <div class="metric-label">Total Scraped</div>
+          </div>
+          <div class="metric-card highlight">
+            <div class="metric-value" id="filteredLeadsVal">-</div>
+            <div class="metric-label">Filtered Target</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="percentageVal">-</div>
+            <div class="metric-label">Filtered Rate</div>
+          </div>
+        </div>
+
+        <!-- Export Methods Section -->
+        <div class="export-methods-section">
+          <h3>Export Target Leads</h3>
+          <div class="export-grid">
+            <!-- Copy & Paste -->
+            <div class="export-card recommended">
+              <h4>📋 Copy to Sheet</h4>
+              <p>Copies formatted columns. Open Sheet, select A1, and press Ctrl+V.</p>
+              <button id="copyClipboardBtn" class="btn btn-primary btn-sm" disabled>Copy Data</button>
+            </div>
+
+            <!-- CSV Download -->
+            <div class="export-card">
+              <h4>📥 Download CSV</h4>
+              <p>Download a standard spreadsheet file that you can import manually.</p>
+              <button id="downloadCsvBtn" class="btn btn-outline btn-sm" disabled>Download CSV</button>
+            </div>
+
+            <!-- Direct Sync -->
+            <div class="export-card">
+              <h4>⚡ Sync to Sheets</h4>
+              <p>Upload data directly to your Sheet via the web app URL.</p>
+              <button id="syncSheetsBtn" class="btn btn-outline btn-sm" disabled>Direct Sync</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <h3>Leads Preview (<span id="previewCount">0</span>)</h3>
+          </div>
+          <div class="table-responsive">
+            <table id="previewTable">
+              <thead>
+                <tr>
+                  <th>Business Name</th>
+                  <th>Phone Number</th>
+                  <th>Website</th>
+                  <th>Category/Summary</th>
+                  <th>Email</th>
+                  <th>Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="empty-state-row">
+                  <td colspan="6" class="empty-state">
+                    <div class="empty-icon">📂</div>
+                    <div class="empty-text">No data processed yet. Paste JSON to begin.</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Custom Build Banner -->
+    <section class="cta-banner">
+      <div class="cta-content">
+        <h2>Need a Custom Web Project, AI Voice Agent, or Scraping Engine?</h2>
+        <p>Get in touch with the experts at <a href="https://sharimstudios.com" target="_blank">sharimstudios.com</a> to build your next custom automation tool, website, or voice pipeline.</p>
+      </div>
+      <div class="cta-action">
+        <button id="openContactModalBtn" class="btn btn-primary">Inquire Custom Project</button>
+      </div>
+    </section>
+
+    <!-- Footer Branding -->
+    <footer class="app-footer">
+      <p>Built with ❤️ by <a href="https://sharimstudios.com" target="_blank">sharimstudios.com</a></p>
+    </footer>
+
+    <!-- Contact Modal Overlay -->
+    <div id="contactModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Inquire About a Custom Build</h3>
+          <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <form id="contactForm" class="modal-form">
+          <div class="form-group">
+            <label for="clientName">Your Name</label>
+            <input type="text" id="clientName" placeholder="e.g. John Doe" required />
+          </div>
+          <div class="form-group">
+            <label for="projectType">What do you need built?</label>
+            <select id="projectType" class="select-control" required>
+              <option value="AI Voice Agents">AI Voice Agents & Automations</option>
+              <option value="Custom Web Projects">Custom Web Projects & Landing Pages</option>
+              <option value="Custom Scraping Tools">Custom Scraping & Lead Extraction</option>
+              <option value="Other Project">Other Custom Software Build</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="projectDetails">Project Details</label>
+            <textarea id="projectDetails" style="height: 100px; resize: none;" placeholder="Briefly describe what you want us to build for you..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            💬 Send Inquiry via WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Successfully completed!</div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
