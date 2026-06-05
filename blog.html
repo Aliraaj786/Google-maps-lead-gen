@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | AI Insights & Trends | Sharim Studios</title>
+  <meta name="description" content="Explore in-depth articles on artificial intelligence, autonomous AI agents, and the best AI tools transforming how modern agencies work. Written by Sharim Studios.">
+  <meta name="keywords" content="AI, artificial intelligence, AI agents, AI tools, automation, machine learning, digital agency, Sharim Studios">
+  <meta name="author" content="Sharim Studios">
+  <meta property="og:title" content="AI Insights & Trends Blog | Sharim Studios">
+  <meta property="og:description" content="In-depth articles on artificial intelligence, autonomous agents, and AI tools for modern agencies.">
+  <meta property="og:type" content="website">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">🗺️</div>
+        <div class="logo-text">
+          <h1>LeadFilter</h1>
+          <span>by <a href="https://sharimstudios.com" target="_blank" class="brand-link">sharimstudios.com</a></span>
+        </div>
+      </div>
+      <nav class="app-nav">
+        <a href="./index.html" class="nav-link">Extractor</a>
+        <a href="./blog.html" class="nav-link active">Blog</a>
+      </nav>
+    </header>
+
+    <!-- Blog Hero -->
+    <section class="blog-hero">
+      <h1>AI Insights & Trends</h1>
+      <p>Thoughtful perspectives on artificial intelligence, automation, and the tools shaping the future of work.</p>
+    </section>
+
+    <!-- Blog Grid -->
+    <section class="blog-grid">
+
+      <!-- Article 1 -->
+      <article class="blog-card" onclick="openArticle('article1')">
+        <div class="blog-card-image">
+          <img src="./images/ai_info.png" alt="Abstract visualization of artificial intelligence and neural networks" loading="lazy">
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">Artificial Intelligence</span>
+          <h2>The AI Revolution Is Not Coming. It Is Already Here.</h2>
+          <p class="blog-excerpt">Most people think of artificial intelligence as something from science fiction, a distant future where robots walk among us. But the truth is far more interesting and far more immediate than that...</p>
+          <div class="blog-meta">
+            <span>By Sharim Studios</span>
+            <span>June 2025</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Article 2 -->
+      <article class="blog-card" onclick="openArticle('article2')">
+        <div class="blog-card-image">
+          <img src="./images/ai_agents.png" alt="Autonomous AI agents collaborating on digital workflow screens" loading="lazy">
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">AI Agents</span>
+          <h2>Why Autonomous AI Agents Are Changing Everything About How We Work</h2>
+          <p class="blog-excerpt">There was a time when automation meant setting up a simple email sequence or scheduling social media posts in advance. Those days feel like ancient history now...</p>
+          <div class="blog-meta">
+            <span>By Sharim Studios</span>
+            <span>June 2025</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Article 3 -->
+      <article class="blog-card" onclick="openArticle('article3')">
+        <div class="blog-card-image">
+          <img src="./images/ai_tools.png" alt="Modern AI productivity tools and dashboard interfaces" loading="lazy">
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-tag">AI Tools</span>
+          <h2>Three AI Tools Every Digital Agency Should Be Using Right Now</h2>
+          <p class="blog-excerpt">If you run a digital agency or freelance operation in 2025, you have probably noticed something. The teams that are winning are not necessarily the biggest or the most experienced...</p>
+          <div class="blog-meta">
+            <span>By Sharim Studios</span>
+            <span>June 2025</span>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Built with ❤️ by <a href="https://sharimstudios.com" target="_blank">sharimstudios.com</a></p>
+    </footer>
+  </div>
+
+  <!-- Article Reading Modal -->
+  <div id="articleModal" class="article-overlay">
+    <div class="article-modal-card">
+      <button class="article-close-btn" onclick="closeArticle()">&times;</button>
+      <div id="articleContent" class="article-content"></div>
+    </div>
+  </div>
+
+  <!-- Full Articles Data -->
+  <script>
+    const articles = {
+      article1: {
+        tag: 'Artificial Intelligence',
+        title: 'The AI Revolution Is Not Coming. It Is Already Here.',
+        image: './images/ai_info.png',
+        imageAlt: 'Abstract visualization of artificial intelligence and neural networks',
+        body: `
+          <p>Most people think of artificial intelligence as something from science fiction, a distant future where robots walk among us. But the truth is far more interesting and far more immediate than that. Artificial intelligence is already woven into the fabric of our everyday lives. When you unlock your phone with your face, when your email app sorts out spam before you ever see it, when your maps app reroutes you around a traffic jam in real time, that is AI quietly doing its job in the background. It is not flashy. It is not dramatic. It simply works, and most of us never even notice.</p>
+
+          <p>What has changed in the last two years is the speed at which AI capabilities have grown. Language models can now draft professional emails, summarize legal documents, and even write functioning code. Image generators can create photorealistic visuals from a simple text description. These are not experimental toys locked away in university labs. They are tools that freelancers, small business owners, and marketing teams are using every single day to move faster and produce better work. The gap between companies that embrace these tools and those that ignore them is widening quickly, and it is becoming harder to catch up the longer you wait.</p>
+
+          <p>Perhaps the most important thing to understand about this moment in AI is that it rewards curiosity. You do not need a computer science degree to benefit from what is happening. You do not need to understand how neural networks function under the hood. What you need is a willingness to experiment, to try a new tool for thirty minutes and see what it can do for your specific workflow. The people and businesses that thrive in the coming years will not necessarily be the most technical. They will be the ones who stayed curious, who asked good questions, and who were not afraid to let a machine handle the repetitive stuff so they could focus on the work that actually matters.</p>
+        `
+      },
+
+      article2: {
+        tag: 'AI Agents',
+        title: 'Why Autonomous AI Agents Are Changing Everything About How We Work',
+        image: './images/ai_agents.png',
+        imageAlt: 'Autonomous AI agents collaborating on digital workflow screens',
+        body: `
+          <p>There was a time when automation meant setting up a simple email sequence or scheduling social media posts in advance. Those days feel like ancient history now. The new frontier is something called autonomous AI agents, and they represent a fundamental shift in how work gets done. Unlike traditional automation, which follows a rigid set of rules you define in advance, an AI agent can actually reason through problems, make decisions on the fly, and adapt its approach when something unexpected happens. Think of it less like a pre-programmed robot and more like a very capable digital assistant who understands context and can figure things out without being told every single step.</p>
+
+          <p>What makes agents so powerful is their ability to chain together multiple tasks into a single workflow. Imagine telling an agent to research a list of potential clients, find their contact information, draft a personalized outreach email for each one, and then schedule those emails to go out at the optimal time. A year ago, that would have required three different software subscriptions and hours of manual copy pasting. Today, a well configured AI agent can handle the entire process while you focus on closing deals or building your product. Agencies, in particular, are finding enormous value here because the volume of repetitive research and outreach work has always been the bottleneck that limited how fast they could grow.</p>
+
+          <p>Of course, agents are not magic, and they work best when a human stays in the loop to review important decisions and course correct when needed. The businesses seeing the best results are not the ones trying to replace their entire team with AI. They are the ones using agents to amplify what their people can do, taking a three person operation and giving it the output capacity of a team twice that size. That is the real promise of autonomous agents. Not replacing humans, but removing the tedious friction that has always slowed good people down, so they can spend their energy on creative thinking, relationship building, and the kind of strategic work that no machine can replicate.</p>
+        `
+      },
+
+      article3: {
+        tag: 'AI Tools',
+        title: 'Three AI Tools Every Digital Agency Should Be Using Right Now',
+        image: './images/ai_tools.png',
+        imageAlt: 'Modern AI productivity tools and dashboard interfaces',
+        body: `
+          <p>If you run a digital agency or freelance operation in 2025, you have probably noticed something. The teams that are winning are not necessarily the biggest or the most experienced. They are the ones who figured out how to use the right tools at the right time. And right now, three categories of AI tools are making a measurable difference in how agencies deliver results for their clients. The first is AI powered copywriting assistants. Tools in this space have matured to the point where they can produce first drafts of blog posts, ad copy, product descriptions, and social media content that genuinely sound like a human wrote them. The key word there is first draft. The best agencies use these tools to eliminate the blank page problem, then refine and polish the output with their own expertise and brand voice. It cuts content production time roughly in half without sacrificing quality.</p>
+
+          <p>The second category is visual AI tools, specifically image generators and design assistants. Creating custom graphics used to require either an in house designer or an expensive freelancer, and turnaround times were measured in days. Now you can generate concept art, social media visuals, presentation graphics, and even product mockups in minutes. This does not replace skilled designers for high stakes branding work, but for the everyday visual content that agencies churn out in volume, it is a genuine game changer. Clients notice when your turnaround time drops from three days to three hours, and they remember it when contract renewal comes around.</p>
+
+          <p>The third and perhaps most underrated category is data scraping and lead enrichment tools. Finding potential clients, gathering their contact details, and organizing everything into a clean spreadsheet used to be the most tedious part of any outreach campaign. AI powered scrapers can now pull structured business data from platforms like Google Maps, enrich it with email addresses and social profiles, and deliver a ready to use lead list in a fraction of the time. When you pair these tools with the copywriting assistants mentioned above, you end up with a complete outreach pipeline that runs at a speed that would have been unthinkable just two years ago. The agencies that stack these three tool categories together are not just saving time. They are operating on an entirely different level.</p>
+        `
+      }
+    };
+
+    function openArticle(id) {
+      const article = articles[id];
+      if (!article) return;
+
+      const html = `
+        <span class="blog-tag">${article.tag}</span>
+        <h1>${article.title}</h1>
+        <img src="${article.image}" alt="${article.imageAlt}" class="article-hero-img">
+        <div class="article-body">${article.body}</div>
+        <div class="article-author">
+          <span>Written by <strong>Sharim Studios</strong></span>
+          <a href="https://sharimstudios.com" target="_blank">sharimstudios.com</a>
+        </div>
+      `;
+      document.getElementById('articleContent').innerHTML = html;
+      document.getElementById('articleModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeArticle() {
+      document.getElementById('articleModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('articleModal').addEventListener('click', function(e) {
+      if (e.target === this) closeArticle();
+    });
+  </script>
+</body>
+</html>
