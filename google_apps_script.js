@@ -44,9 +44,9 @@ function doPost(e) {
     // Check if sheet is empty (row count is 0, or just check cell A1)
     var isNewSheet = sheet.getLastRow() === 0;
     if (isNewSheet) {
-      sheet.appendRow(["Business Name", "Phone", "Address", "Category/Summary", "Email", "Google Maps URL"]);
+      sheet.appendRow(["Business Name", "Phone", "Website", "Address", "Postal Code", "Category/Summary", "Email", "Facebook", "Instagram", "TikTok", "Google Maps URL"]);
       // Format header row
-      var headerRange = sheet.getRange(1, 1, 1, 6);
+      var headerRange = sheet.getRange(1, 1, 1, 11);
       headerRange.setFontWeight("bold");
       headerRange.setBackgroundColor("#10b981"); // Emerald green
       headerRange.setFontColor("#ffffff");
@@ -58,16 +58,21 @@ function doPost(e) {
       sheet.appendRow([
         lead.name || "",
         lead.phone || "",
+        lead.website || "",
         lead.address || "",
+        lead.postalCode || "",
         lead.category || "",
         lead.email || "",
+        lead.facebook || "",
+        lead.instagram || "",
+        lead.tiktok || "",
         lead.url || ""
       ]);
       addedCount++;
     });
     
     // Auto-resize columns
-    sheet.autoResizeColumns(1, 6);
+    sheet.autoResizeColumns(1, 11);
     
     var response = { status: "success", message: "Successfully synced " + addedCount + " leads!", count: addedCount };
     return ContentService.createTextOutput(JSON.stringify(response))

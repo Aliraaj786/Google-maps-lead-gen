@@ -29,32 +29,40 @@ const sampleJson = [
   {
     "title": "Starbucks Coffee",
     "phone": "+1 202-555-0143",
-    "address": "455 Massachusetts Ave NW, Washington, DC",
+    "address": "455 Massachusetts Ave NW, Washington, DC 20001",
+    "postalCode": "20001",
     "categoryName": "Coffee Shop",
     "website": "https://www.starbucks.com",
-    "url": "https://maps.google.com/?cid=123"
+    "url": "https://maps.google.com/?cid=123",
+    "facebookUrl": "https://facebook.com/starbucks",
+    "instagramUrl": "https://instagram.com/starbucks"
   },
   {
     "title": "Elite Plumbing Services",
     "phone": "+1 202-555-0199",
-    "address": "1200 K St NW, Washington, DC",
+    "address": "1200 K St NW, Washington, DC 20005",
+    "postalCode": "20005",
     "categoryName": "Plumber",
     "website": "",
     "url": "https://maps.google.com/?cid=456",
-    "email": "info@eliteplumbingdc.com"
+    "email": "info@eliteplumbingdc.com",
+    "facebookUrl": "https://facebook.com/eliteplumbingdc"
   },
   {
     "title": "Downtown Bakery & Cafe",
     "phone": "+1 202-555-0188",
-    "address": "700 11th St NW, Washington, DC",
+    "address": "700 11th St NW, Washington, DC 20004",
+    "postalCode": "20004",
     "categoryName": "Bakery",
     "website": "http://downtownbakery.com",
-    "url": "https://maps.google.com/?cid=789"
+    "url": "https://maps.google.com/?cid=789",
+    "tiktokUrl": "https://tiktok.com/@downtownbakery"
   },
   {
     "title": "Apex Auto Repair",
     "phone": "+1 202-555-0177",
-    "address": "1625 I St NW, Washington, DC",
+    "address": "1625 I St NW, Washington, DC 20006",
+    "postalCode": "20006",
     "categoryName": "Auto Repair Shop",
     "website": "",
     "url": "https://maps.google.com/?cid=101"
@@ -62,10 +70,12 @@ const sampleJson = [
   {
     "title": "Green Leaf Landscaping",
     "phone": "+1 202-555-0122",
-    "address": "901 New York Ave NW, Washington, DC",
+    "address": "901 New York Ave NW, Washington, DC 20001",
+    "postalCode": "20001",
     "categoryName": "Landscaper",
     "website": "",
-    "url": "https://maps.google.com/?cid=202"
+    "url": "https://maps.google.com/?cid=202",
+    "instagramUrl": "https://instagram.com/greenleafdc"
   }
 ];
 
@@ -101,8 +111,8 @@ function doPost(e) {
     var sheet = ss.getActiveSheet();
     var isNewSheet = sheet.getLastRow() === 0;
     if (isNewSheet) {
-      sheet.appendRow(["Business Name", "Phone", "Website", "Address", "Category/Summary", "Email", "Google Maps URL"]);
-      var headerRange = sheet.getRange(1, 1, 1, 7);
+      sheet.appendRow(["Business Name", "Phone", "Website", "Address", "Postal Code", "Category/Summary", "Email", "Facebook", "Instagram", "TikTok", "Google Maps URL"]);
+      var headerRange = sheet.getRange(1, 1, 1, 11);
       headerRange.setFontWeight("bold");
       headerRange.setBackgroundColor("#10b981");
       headerRange.setFontColor("#ffffff");
@@ -115,14 +125,18 @@ function doPost(e) {
         lead.phone || "",
         lead.website || "",
         lead.address || "",
+        lead.postalCode || "",
         lead.category || "",
         lead.email || "",
+        lead.facebook || "",
+        lead.instagram || "",
+        lead.tiktok || "",
         lead.url || ""
       ]);
       addedCount++;
     });
     
-    sheet.autoResizeColumns(1, 7);
+    sheet.autoResizeColumns(1, 11);
     
     return ContentService.createTextOutput(JSON.stringify({ status: "success", count: addedCount }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -233,14 +247,54 @@ function processData(silent = false) {
         }
       }
 
+      // Robust Social Profile Resolution
+      function findSocial(lead, platform) {
+        // Check direct URL fields first
+        const directKey = platform + 'Url';
+        if (lead[directKey] && typeof lead[directKey] === 'string' && lead[directKey].trim() !== '') {
+          return lead[directKey].trim();
+        }
+        // Check socialProfiles object/array
+        if (lead.socialProfiles && typeof lead.socialProfiles === 'object') {
+          if (Array.isArray(lead.socialProfiles)) {
+            const match = lead.socialProfiles.find(p => p && typeof p === 'string' && p.toLowerCase().includes(platform));
+            if (match) return match;
+            const matchObj = lead.socialProfiles.find(p => p && p.platform && p.platform.toLowerCase().includes(platform));
+            if (matchObj && matchObj.url) return matchObj.url;
+          } else {
+            if (lead.socialProfiles[platform]) return lead.socialProfiles[platform];
+          }
+        }
+        return '';
+      }
+
+      // Robust Postal Code Resolution
+      let resolvedPostalCode = '';
+      if (lead.postalCode && String(lead.postalCode).trim() !== '') {
+        resolvedPostalCode = String(lead.postalCode).trim();
+      } else if (lead.zipCode && String(lead.zipCode).trim() !== '') {
+        resolvedPostalCode = String(lead.zipCode).trim();
+      } else if (lead.postcode && String(lead.postcode).trim() !== '') {
+        resolvedPostalCode = String(lead.postcode).trim();
+      } else {
+        // Try to extract from address string (look for 5+ digit number pattern)
+        const addrStr = resolvedAddress || '';
+        const zipMatch = addrStr.match(/\b(\d{5,})\b/);
+        if (zipMatch) resolvedPostalCode = zipMatch[1];
+      }
+
       // Normalize columns
       return {
         name: lead.title || lead.name || 'Unnamed Business',
         phone: lead.phone || lead.phoneNumber || lead.phoneUnformatted || 'No Phone',
         website: lead.website || '',
         address: resolvedAddress,
+        postalCode: resolvedPostalCode,
         category: lead.categoryName || lead.subTitle || 'Business',
         email: resolvedEmail,
+        facebook: findSocial(lead, 'facebook'),
+        instagram: findSocial(lead, 'instagram'),
+        tiktok: findSocial(lead, 'tiktok'),
         url: lead.url || lead.link || ''
       };
     });
@@ -314,7 +368,7 @@ function renderTable() {
   if (filteredLeads.length === 0) {
     tbody.innerHTML = `
       <tr class="empty-state-row">
-        <td colspan="5" class="empty-state">
+        <td colspan="11" class="empty-state">
           <div class="empty-icon">📂</div>
           <div class="empty-text">No businesses matching filter criteria. All entries had websites!</div>
         </td>
@@ -325,6 +379,7 @@ function renderTable() {
 
   filteredLeads.forEach(lead => {
     const tr = document.createElement('tr');
+    const socialLink = (url, label) => url ? `<a href="${escapeHtml(url)}" target="_blank" style="color: var(--accent-indigo); text-decoration: none;">${label}</a>` : '-';
     tr.innerHTML = `
       <td title="${lead.name}">${escapeHtml(lead.name)}</td>
       <td title="${lead.phone}">${escapeHtml(lead.phone)}</td>
@@ -332,6 +387,11 @@ function renderTable() {
       <td title="${lead.category}">${escapeHtml(lead.category)}</td>
       <td title="${lead.email}">${escapeHtml(lead.email)}</td>
       <td title="${lead.address}">${escapeHtml(lead.address)}</td>
+      <td>${escapeHtml(lead.postalCode) || '-'}</td>
+      <td>${socialLink(lead.facebook, '🔗 Profile')}</td>
+      <td>${socialLink(lead.instagram, '🔗 Profile')}</td>
+      <td>${socialLink(lead.tiktok, '🔗 Profile')}</td>
+      <td>${lead.url ? `<a href="${escapeHtml(lead.url)}" target="_blank" style="color: var(--accent-indigo); text-decoration: none;">📍 View</a>` : '-'}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -351,7 +411,7 @@ function escapeHtml(str) {
 copyClipboardBtn.addEventListener('click', () => {
   if (filteredLeads.length === 0) return;
 
-  const headers = ['Business Name', 'Phone Number', 'Website', 'Category/Summary', 'Email', 'Address', 'Google Maps URL'];
+  const headers = ['Business Name', 'Phone Number', 'Website', 'Category/Summary', 'Email', 'Address', 'Postal Code', 'Facebook', 'Instagram', 'TikTok', 'Google Maps URL'];
   const rows = [headers.join('\t')];
 
   filteredLeads.forEach(lead => {
@@ -362,6 +422,10 @@ copyClipboardBtn.addEventListener('click', () => {
       lead.category,
       lead.email,
       lead.address,
+      lead.postalCode,
+      lead.facebook,
+      lead.instagram,
+      lead.tiktok,
       lead.url
     ].join('\t'));
   });
@@ -380,7 +444,7 @@ copyClipboardBtn.addEventListener('click', () => {
 downloadCsvBtn.addEventListener('click', () => {
   if (filteredLeads.length === 0) return;
 
-  const headers = ['Business Name', 'Phone Number', 'Website', 'Category/Summary', 'Email', 'Address', 'Google Maps URL'];
+  const headers = ['Business Name', 'Phone Number', 'Website', 'Category/Summary', 'Email', 'Address', 'Postal Code', 'Facebook', 'Instagram', 'TikTok', 'Google Maps URL'];
   const rows = [headers];
 
   filteredLeads.forEach(lead => {
@@ -391,6 +455,10 @@ downloadCsvBtn.addEventListener('click', () => {
       `"${lead.category.replace(/"/g, '""')}"`,
       `"${lead.email.replace(/"/g, '""')}"`,
       `"${lead.address.replace(/"/g, '""')}"`,
+      `"${lead.postalCode.replace(/"/g, '""')}"`,
+      `"${lead.facebook.replace(/"/g, '""')}"`,
+      `"${lead.instagram.replace(/"/g, '""')}"`,
+      `"${lead.tiktok.replace(/"/g, '""')}"`,
       `"${lead.url.replace(/"/g, '""')}"`
     ]);
   });
